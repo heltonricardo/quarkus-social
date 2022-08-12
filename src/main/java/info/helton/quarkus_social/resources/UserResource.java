@@ -1,5 +1,6 @@
 package info.helton.quarkus_social.resources;
 
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,6 +11,8 @@ import javax.ws.rs.core.Response;
 
 import info.helton.quarkus_social.constants.Route;
 import info.helton.quarkus_social.dto.input.UserIDTO;
+import info.helton.quarkus_social.models.User;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
 @Path(Route.USERS)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -17,12 +20,18 @@ import info.helton.quarkus_social.dto.input.UserIDTO;
 public class UserResource {
 
     @POST
+    @Transactional
     public Response create(UserIDTO dto) {
-        return Response.ok(dto).build();
+        User user = new User();
+        user.name = dto.getName();
+        user.age = dto.getAge();
+        user.persist();
+        return Response.ok(user).build();
     }
 
     @GET
     public Response listAll() {
-        return Response.ok().build();
+        PanacheQuery<User> query = User.findAll();
+        return Response.ok(query.list()).build();
     }
 }
