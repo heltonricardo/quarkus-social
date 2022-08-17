@@ -6,9 +6,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.jboss.resteasy.reactive.RestPath;
 
 import info.helton.quarkus_social.constants.Route;
 import info.helton.quarkus_social.dto.input.UserIDTO;
@@ -26,6 +27,15 @@ public class UserResource {
         return Response.ok(query.list()).build();
     }
 
+    @GET
+    @Path("/{id}")
+    public Response findById(@RestPath Long id) {
+        User query = User.findById(id);
+        return query != null
+                ? Response.ok(query).build()
+                : Response.status(Status.NOT_FOUND).build();
+    }
+
     @POST
     @Transactional
     public Response create(UserIDTO dto) {
@@ -39,7 +49,7 @@ public class UserResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, UserIDTO dto) {
+    public Response update(@RestPath Long id, UserIDTO dto) {
         User entity = User.findById(id);
         if (entity == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -52,7 +62,7 @@ public class UserResource {
     @DELETE
     @Path("/{id}")
     @Transactional
-    public Response deleteUser(@PathParam("id") Long id) {
+    public Response deleteUser(@RestPath Long id) {
         boolean deleted = User.deleteById(id);
         return deleted
                 ? Response.ok().build()
