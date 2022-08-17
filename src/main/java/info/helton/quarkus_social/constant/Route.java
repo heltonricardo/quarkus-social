@@ -1,4 +1,4 @@
-package info.helton.quarkus_social.constants;
+package info.helton.quarkus_social.constant;
 
 public final class Route {
     

@@ -1,4 +1,4 @@
-package info.helton.quarkus_social.models;
+package info.helton.quarkus_social.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

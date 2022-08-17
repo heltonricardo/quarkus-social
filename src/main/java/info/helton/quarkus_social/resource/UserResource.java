@@ -1,4 +1,4 @@
-package info.helton.quarkus_social.resources;
+package info.helton.quarkus_social.resource;
 
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
@@ -11,10 +11,10 @@ import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.reactive.RestPath;
 
-import info.helton.quarkus_social.constants.Route;
+import info.helton.quarkus_social.constant.Route;
 import info.helton.quarkus_social.dto.input.UserIDTO;
-import info.helton.quarkus_social.models.User;
-import info.helton.quarkus_social.templates.QSResource;
+import info.helton.quarkus_social.model.User;
+import info.helton.quarkus_social.template.QSResource;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
 @QSResource
