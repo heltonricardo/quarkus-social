@@ -1,9 +1,12 @@
 package info.helton.quarkus_social.resource;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,8 +27,14 @@ import info.helton.quarkus_social.template.QSResource;
 @Path(Route.USERS)
 public class UserResource {
 
+    final UserRepository repository;
+    final Validator validator;
+    
     @Inject
-    UserRepository repository;
+    public UserResource(UserRepository repository, Validator validator) {
+        this.repository = repository;
+        this.validator = validator;
+    }
 
     @GET
     public Response listAll() {
@@ -45,6 +54,11 @@ public class UserResource {
     @POST
     @Transactional
     public Response create(UserIDTO dto) {
+        Set<ConstraintViolation<UserIDTO>> violations = validator.validate(dto);
+        if (!violations.isEmpty()) {
+            String message = violations.stream().findAny().get().getMessage();
+            return Response.status(Status.BAD_REQUEST).entity(message).build();
+        }
         User user = new User();
         user.name = dto.getName();
         user.age = dto.getAge();
@@ -68,7 +82,7 @@ public class UserResource {
     @DELETE
     @Path("/{id}")
     @Transactional
-    public Response deleteUser(@RestPath Long id) {
+    public Response delete(@RestPath Long id) {
         boolean deleted = repository.deleteById(id);
         return deleted
                 ? Response.ok().build()
