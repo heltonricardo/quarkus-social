@@ -1,5 +1,8 @@
 package info.helton.quarkus_social.resource;
 
+import java.util.List;
+
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,23 +17,26 @@ import org.jboss.resteasy.reactive.RestPath;
 import info.helton.quarkus_social.constant.Route;
 import info.helton.quarkus_social.dto.input.UserIDTO;
 import info.helton.quarkus_social.model.User;
+import info.helton.quarkus_social.repository.UserRepository;
 import info.helton.quarkus_social.template.QSResource;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 
 @QSResource
 @Path(Route.USERS)
 public class UserResource {
 
+    @Inject
+    UserRepository repository;
+
     @GET
     public Response listAll() {
-        PanacheQuery<User> query = User.findAll();
-        return Response.ok(query.list()).build();
+        List<User> query = repository.listAll();
+        return Response.ok(query).build();
     }
 
     @GET
     @Path("/{id}")
     public Response findById(@RestPath Long id) {
-        User query = User.findById(id);
+        User query = repository.findById(id);
         return query != null
                 ? Response.ok(query).build()
                 : Response.status(Status.NOT_FOUND).build();
@@ -42,7 +48,7 @@ public class UserResource {
         User user = new User();
         user.name = dto.getName();
         user.age = dto.getAge();
-        user.persist();
+        repository.persist(user);
         return Response.ok(user).build();
     }
 
@@ -50,7 +56,7 @@ public class UserResource {
     @Path("/{id}")
     @Transactional
     public Response update(@RestPath Long id, UserIDTO dto) {
-        User entity = User.findById(id);
+        User entity = repository.findById(id);
         if (entity == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
@@ -63,7 +69,7 @@ public class UserResource {
     @Path("/{id}")
     @Transactional
     public Response deleteUser(@RestPath Long id) {
-        boolean deleted = User.deleteById(id);
+        boolean deleted = repository.deleteById(id);
         return deleted
                 ? Response.ok().build()
                 : Response.status(Status.NOT_FOUND).build();
