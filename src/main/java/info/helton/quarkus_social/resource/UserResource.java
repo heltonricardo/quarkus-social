@@ -19,6 +19,7 @@ import org.jboss.resteasy.reactive.RestPath;
 
 import info.helton.quarkus_social.constant.Route;
 import info.helton.quarkus_social.dto.input.UserIDTO;
+import info.helton.quarkus_social.error.ResponseError;
 import info.helton.quarkus_social.model.User;
 import info.helton.quarkus_social.repository.UserRepository;
 import info.helton.quarkus_social.template.QSResource;
@@ -29,7 +30,7 @@ public class UserResource {
 
     final UserRepository repository;
     final Validator validator;
-    
+
     @Inject
     public UserResource(UserRepository repository, Validator validator) {
         this.repository = repository;
@@ -56,8 +57,8 @@ public class UserResource {
     public Response create(UserIDTO dto) {
         Set<ConstraintViolation<UserIDTO>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
-            String message = violations.stream().findAny().get().getMessage();
-            return Response.status(Status.BAD_REQUEST).entity(message).build();
+            ResponseError response = ResponseError.create("Validation Error", violations);
+            return Response.status(Status.BAD_REQUEST).entity(response).build();
         }
         User user = new User();
         user.name = dto.getName();
