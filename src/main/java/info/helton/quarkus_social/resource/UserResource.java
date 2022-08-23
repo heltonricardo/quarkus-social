@@ -57,14 +57,15 @@ public class UserResource {
     public Response create(UserIDTO dto) {
         Set<ConstraintViolation<UserIDTO>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
-            ResponseError response = ResponseError.create("Validation Error", violations);
-            return Response.status(Status.BAD_REQUEST).entity(response).build();
+            return ResponseError
+                    .create("Validation Error", violations)
+                    .statusCode(ResponseError.UNPROCESSABLE_ENTITY);
         }
         User user = new User();
         user.name = dto.getName();
         user.age = dto.getAge();
         repository.persist(user);
-        return Response.ok(user).build();
+        return Response.status(Status.CREATED).entity(user).build();
     }
 
     @PUT
@@ -77,7 +78,7 @@ public class UserResource {
         }
         entity.age = dto.getAge();
         entity.name = dto.getName();
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @DELETE
@@ -86,7 +87,7 @@ public class UserResource {
     public Response delete(@RestPath Long id) {
         boolean deleted = repository.deleteById(id);
         return deleted
-                ? Response.ok().build()
+                ? Response.noContent().build()
                 : Response.status(Status.NOT_FOUND).build();
     }
 }
