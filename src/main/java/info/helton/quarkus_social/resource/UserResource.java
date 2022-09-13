@@ -23,19 +23,15 @@ import info.helton.quarkus_social.error.ResponseError;
 import info.helton.quarkus_social.model.User;
 import info.helton.quarkus_social.repository.UserRepository;
 import info.helton.quarkus_social.template.QSResource;
+import lombok.RequiredArgsConstructor;
 
 @QSResource
 @Path(Route.USERS)
+@RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class UserResource {
 
     final UserRepository repository;
     final Validator validator;
-
-    @Inject
-    public UserResource(UserRepository repository, Validator validator) {
-        this.repository = repository;
-        this.validator = validator;
-    }
 
     @GET
     public Response listAll() {
@@ -61,9 +57,10 @@ public class UserResource {
                     .create("Validation Error", violations)
                     .statusCode(ResponseError.UNPROCESSABLE_ENTITY);
         }
-        User user = new User();
-        user.name = dto.getName();
-        user.age = dto.getAge();
+        User user = User.builder()
+                .name(dto.getName())
+                .age(dto.getAge())
+                .build();
         repository.persist(user);
         return Response.status(Status.CREATED).entity(user).build();
     }
@@ -72,12 +69,12 @@ public class UserResource {
     @Path("/{id}")
     @Transactional
     public Response update(@RestPath Long id, UserIDTO dto) {
-        User entity = repository.findById(id);
-        if (entity == null) {
+        User user = repository.findById(id);
+        if (user == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
-        entity.age = dto.getAge();
-        entity.name = dto.getName();
+        user.setAge(dto.getAge());
+        user.setName(dto.getName());
         return Response.noContent().build();
     }
 
