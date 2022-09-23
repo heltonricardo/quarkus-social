@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -22,6 +23,7 @@ import info.helton.quarkus_social.dto.output.PostODTO;
 import info.helton.quarkus_social.error.ResponseError;
 import info.helton.quarkus_social.model.Post;
 import info.helton.quarkus_social.model.User;
+import info.helton.quarkus_social.repository.FollowerRepository;
 import info.helton.quarkus_social.repository.PostRepository;
 import info.helton.quarkus_social.repository.UserRepository;
 import info.helton.quarkus_social.template.QSResource;
@@ -34,13 +36,21 @@ public class PostResource {
 
     final PostRepository repository;
     final UserRepository userRepository;
+    final FollowerRepository followerRepository;
     final Validator validator;
 
     @GET
-    public Response listAll(@RestPath Long userId) {
+    public Response listAll(@RestPath Long userId, @HeaderParam("followerId") Long followerId) {
+        if (userId == null || followerId == null) {
+            return Response.status(Status.BAD_REQUEST).build();
+        }
         User user = userRepository.findById(userId);
-        if (user == null) {
+        User follower = userRepository.findById(followerId);
+        if (user == null || follower == null) {
             return Response.status(Status.NOT_FOUND).build();
+        }
+        if (followerRepository.doesNotFollow(follower, user)) {
+            return Response.status(Status.FORBIDDEN).build();
         }
         List<PostODTO> posts = repository
                 .listAllPostOfUser(user)

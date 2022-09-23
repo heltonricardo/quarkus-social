@@ -4,4 +4,5 @@ public final class Route {
     
     public static final String USERS = "/users";
     public static final String POSTS = USERS + "/{userId}/posts";
+    public static final String FOLLOWERS = USERS + "/{userId}/followers";
 }
