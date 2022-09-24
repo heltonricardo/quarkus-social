@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class FollowerIDTO {
 
-    @NotNull
-    @Positive
+    @NotNull(message = "FollowerId is required")
+    @Positive(message = "FollowerId must be a positive number")
     private Long followerId;
 }
