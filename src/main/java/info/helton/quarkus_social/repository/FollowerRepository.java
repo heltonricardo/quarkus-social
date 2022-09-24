@@ -1,5 +1,7 @@
 package info.helton.quarkus_social.repository;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import info.helton.quarkus_social.model.Follower;
@@ -15,5 +17,9 @@ public class FollowerRepository implements PanacheRepository<Follower> {
         Parameters params = Parameters.with("follower", follower).and("user", user);
         PanacheQuery<Follower> query = find("follower =: follower and user =: user", params);
         return query.firstResultOptional().isEmpty();
+    }
+
+    public List<Follower> listAllFollowersOfUser(User user) {
+        return find("user.id", user.getId()).list();
     }
 }

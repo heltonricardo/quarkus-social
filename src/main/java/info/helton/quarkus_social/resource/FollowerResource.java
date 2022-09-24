@@ -1,11 +1,14 @@
 package info.helton.quarkus_social.resource;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -15,6 +18,8 @@ import org.jboss.resteasy.reactive.RestPath;
 
 import info.helton.quarkus_social.constant.Route;
 import info.helton.quarkus_social.dto.input.FollowerIDTO;
+import info.helton.quarkus_social.dto.output.FollowerODTO;
+import info.helton.quarkus_social.dto.output.FollowersODTO;
 import info.helton.quarkus_social.error.ResponseError;
 import info.helton.quarkus_social.model.Follower;
 import info.helton.quarkus_social.model.User;
@@ -56,5 +61,23 @@ public class FollowerResource {
             repository.persist(entity);
         }
         return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @GET
+    public Response followUser(@RestPath Long userId) {
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        List<FollowerODTO> followers = repository
+                .listAllFollowersOfUser(user)
+                .stream()
+                .map(FollowerODTO::fromEntity)
+                .collect(Collectors.toList());
+        FollowersODTO response = FollowersODTO.builder()
+                .followersCount(followers.size())
+                .followers(followers)
+                .build();
+        return Response.ok(response).build();
     }
 }
