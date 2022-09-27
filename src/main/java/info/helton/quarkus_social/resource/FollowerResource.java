@@ -87,7 +87,8 @@ public class FollowerResource {
     @Transactional
     public Response unfollowUser(@RestPath Long userId, @RestQuery Long followerId) {
         User user = userRepository.findById(userId);
-        if (user == null) {
+        User follower = userRepository.findById(followerId);
+        if (user == null || follower == null) {
             return Response.status(Status.NOT_FOUND).build();
         }
         repository.deleteByFollowerIdAndUserId(followerId, userId);
