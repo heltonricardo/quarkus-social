@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.jboss.resteasy.reactive.RestPath;
+import org.jboss.resteasy.reactive.RestQuery;
 
 import info.helton.quarkus_social.constant.Route;
 import info.helton.quarkus_social.dto.input.FollowerIDTO;
@@ -79,5 +81,16 @@ public class FollowerResource {
                 .followers(followers)
                 .build();
         return Response.ok(response).build();
+    }
+
+    @DELETE
+    @Transactional
+    public Response unfollowUser(@RestPath Long userId, @RestQuery Long followerId) {
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        repository.deleteByFollowerIdAndUserId(followerId, userId);
+        return Response.status(Status.NO_CONTENT).build();
     }
 }
