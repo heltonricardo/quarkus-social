@@ -41,7 +41,7 @@ public class PostResource {
 
     @GET
     public Response listAll(@RestPath Long userId, @HeaderParam("followerId") Long followerId) {
-        if (userId == null || followerId == null) {
+        if (followerId == null) {
             return Response.status(Status.BAD_REQUEST).build();
         }
         User user = userRepository.findById(userId);
