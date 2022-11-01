@@ -66,7 +66,7 @@ public class FollowerResource {
     }
 
     @GET
-    public Response followUser(@RestPath Long userId) {
+    public Response listFollowers(@RestPath Long userId) {
         User user = userRepository.findById(userId);
         if (user == null) {
             return Response.status(Status.NOT_FOUND).build();
