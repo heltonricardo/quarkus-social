@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @TestHTTPEndpoint(FollowerResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
-class PostResourceTest {
+class FollowerResourceTest {
 
     final UserRepository userRepository;
     final FollowerRepository followerRepository;
