@@ -14,7 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.info.License;
         contact = @Contact(
             name = "Helton Santos",
             url = "https://www.helton.info",
-            email = "contato@helton.info"
+            email = "helton.contato@proton.me"
         ),
         license = @License(
             name = "Apache 2.0",
