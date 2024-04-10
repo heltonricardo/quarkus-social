@@ -4,10 +4,12 @@ Social network application with Quarkus
 
 ## Environment Variables
 
+```
 DATABASE_URL=jdbc:postgresql://localhost:5432/quarkus-social
 DATABASE_USER=postgres
 DATABASE_PASS=postgres
 DATABASE_GEN=update
+```
 
 ## Dev Mode
 
